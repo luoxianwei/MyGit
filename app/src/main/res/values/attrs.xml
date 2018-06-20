@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PathViewTemplate">
+        <attr name="showPen" format="boolean"/>
+        <attr name="duration" format="integer"/>
+        <attr name="repeatMode" format="enum">
+            <enum name="NONE" value="0"/>
+            <enum name="RESTART" value="1"/>
+            <enum name="REVERSE" value="2"/>
+        </attr>
+    </declare-styleable>
+
+    <declare-styleable name="TextPathView">
+        <attr name="text" format="string"/>
+        <attr name="textSize" format="dimension"/>
+    </declare-styleable>
+</resources>
