@@ -47,7 +47,6 @@ public class SearchRepoFragment extends ListFragment {
                 }
             }
         });
-        rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
     }
 
@@ -59,36 +58,37 @@ public class SearchRepoFragment extends ListFragment {
     @Override
     public void loadMore() {
         if (presenter != null) {
-            //这里的作用是防止下拉刷新的时候还可以上拉加载
-            adapter.setEnableLoadMore(false);
-            curPage = 1;
-            presenter.searchRepository(keyword, curPage++);
+            presenter.searchRepository(keyword, curPage);
         }
     }
 
     @Override
     public void upRefresh() {
-        if (presenter != null)
-            presenter.searchRepository(keyword, curPage++);
-        else
-            sw_layout.setRefreshing(false);
+        if (presenter != null) {
+            adapter.setEnableLoadMore(false);
+            curPage = 1;
+            sw_layout.setRefreshing(true);
+            presenter.searchRepository(keyword, curPage);
+        }
+
     }
 
     public void loadRepoList(List<RepositoryInfo> repositoryInfos) {
-        LogUtils.i("bbbbbbbbbbbbbb");
-        //==2说明为上拉加载
-        if (curPage == 2) {
+        if(repositoryInfos == null) {
+            sw_layout.setRefreshing(false);
+            return;
+        }
+        if (curPage == 1) {
             adapter.setNewData(repositoryInfos);
             adapter.setEnableLoadMore(true);
             sw_layout.setRefreshing(false);
-
+            curPage++;
         } else {
             if(repositoryInfos.size() == 0) {
                 Utils.showToastLong("没有数据了");
-                adapter.loadMoreEnd();
             } else {
                 adapter.addData(repositoryInfos);
-                adapter.loadMoreComplete();
+                curPage++;
             }
         }
 

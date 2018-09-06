@@ -29,7 +29,7 @@ public class HomeActivity extends BaseActivity{
     }
 
     @Override
-    public void initData(Bundle savedInstanceState) {
+    public void initData() {
         initViewPager();
         initButtonBar();
 

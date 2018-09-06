@@ -23,7 +23,7 @@ public class FollowersListActivity extends UserListActivity {
     }
     @Override
     protected void loadMore() {
-        presenter.followersUserList(user, curPage++);
+        presenter.followersUserList(user, curPage);
     }
 
     @Override
@@ -31,24 +31,24 @@ public class FollowersListActivity extends UserListActivity {
         //这里的作用是防止下拉刷新的时候还可以上拉加载
         adapter.setEnableLoadMore(false);
         curPage = 1;
-        presenter.followersUserList(user, curPage++);
+        sw_layout.setRefreshing(true);
+        presenter.followersUserList(user, curPage);
     }
 
 
     @Override
     public void loadUsersList(List<UserEntity> userEntities) {
-        if (curPage == 2) {
+        if (curPage == 1) {
             adapter.setNewData(userEntities);
             adapter.setEnableLoadMore(true);
             sw_layout.setRefreshing(false);
-
+            curPage++;
         } else {
             if(userEntities.size() == 0) {
                 Utils.showToastLong("没有数据了");
-                adapter.loadMoreEnd();
             } else {
                 adapter.addData(userEntities);
-                adapter.loadMoreComplete();
+                curPage++;
             }
         }
 

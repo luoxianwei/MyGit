@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +28,6 @@ public abstract class ListFragment extends Fragment {
 
     public void setPresenter(SearchListContract.Presenter presenter) {
         this.presenter = presenter;
-        upRefresh();
     }
 
     public void setKeyword(String keyword) {
@@ -51,18 +51,25 @@ public abstract class ListFragment extends Fragment {
 
 
     protected  void initRefresh() {
-        getAdapter().setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
+        rv.setLayoutManager(new LinearLayoutManager(getContext()));
+        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onLoadMoreRequested() {
-                if (Utils.isNetworkAvailable(getContext()))
-                    loadMore();
-                else
-                    Utils.showToastLong("没有网络");
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //当前状态为停止滑动状态SCROLL_STATE_IDLE时
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    LinearLayoutManager manager = (LinearLayoutManager)rv.getLayoutManager();
+                    int lastPosition = manager.findLastVisibleItemPosition();
+                    if (lastPosition == -1) return;//lastPosition为-1说明没有数据,则没有下拉加载
+                    //判断界面显示的最后item的position是否等于itemCount总数-1也就是最后一个item的position
+                    //如果相等则说明已经滑动到最后了
+                    if(lastPosition == recyclerView.getLayoutManager().getItemCount()-1){
+                        loadMore();
+                    }
+                }
+
             }
-        }, rv);
-        //默认第一次加载会进入回调，如果不需要可以配置
-        //先setOnLoadMoreListener再配置
-        getAdapter().disableLoadMoreIfNotFullPage();
+        });
         sw_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -71,24 +78,9 @@ public abstract class ListFragment extends Fragment {
         });
 
         View view = LayoutInflater.from(getContext()).inflate(R.layout.empty_view, null);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Utils.isNetworkAvailable(getContext()))
-                    upRefresh();
-                else
-                    Utils.showToastLong("没有网络");
-            }
-        });
         getAdapter().setEmptyView(view);
 
-        //adapter.setFooterView(footerView);
-
-        if (Utils.isNetworkAvailable(getContext())) {
-            sw_layout.setRefreshing(true);
-            upRefresh();
-        } else
-            Utils.showToastLong("没有网络");
+        upRefresh();
     }
 
     public void initData() {

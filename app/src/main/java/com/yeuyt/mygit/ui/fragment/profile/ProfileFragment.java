@@ -63,7 +63,7 @@ public class ProfileFragment extends LazyFragment implements LoginFragment.Login
     }
 
     @Override
-    public void initData(Bundle savedInstanceState) {
+    public void initData() {
         if(AccountHelper.isLogin(getViewContext())) {
             itemSignOut.setText("Sign Out");
             info = AccountHelper.getUserInfo(getViewContext());
@@ -88,7 +88,7 @@ public class ProfileFragment extends LazyFragment implements LoginFragment.Login
             showDialog();
             return;
         } else if(info == null) {
-            initData(null);
+            initData();
         }
 
 
@@ -131,10 +131,7 @@ public class ProfileFragment extends LazyFragment implements LoginFragment.Login
     }
 
     private void showDialog() {
-        if (loginFragment == null) {
-            loginFragment = new LoginFragment();
-        }
-        loginFragment.show(getFragmentManager(), "");
+        loginFragment.show(getChildFragmentManager(), "");
     }
 
     @Override

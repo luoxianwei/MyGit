@@ -18,6 +18,7 @@ import com.yeuyt.mygit.presenter.contract.ExploreContract;
 import com.yeuyt.mygit.tools.utils.LogUtils;
 import com.yeuyt.mygit.tools.utils.Utils;
 import com.yeuyt.mygit.ui.activity.RepoPageActivity;
+import com.yeuyt.mygit.ui.activity.detail_list.BaseListActivity;
 import com.yeuyt.mygit.ui.adapter.ListRepoAdapter;
 
 import java.util.List;
@@ -47,18 +48,26 @@ public class GankListFragment extends Fragment {
     }
 
     protected  void initRefresh() {
-        getAdapter().setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
+        rv.setLayoutManager(new LinearLayoutManager(getContext()));
+        rv.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onLoadMoreRequested() {
-                if (Utils.isNetworkAvailable(getContext()))
-                    loadMore();
-                else
-                    Utils.showToastLong("没有网络");
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                //当前状态为停止滑动状态SCROLL_STATE_IDLE时
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    LinearLayoutManager manager = (LinearLayoutManager)rv.getLayoutManager();
+                    int lastPosition = manager.findLastVisibleItemPosition();
+                    if (lastPosition == -1) return;//lastPosition为-1说明没有数据,则没有下拉加载
+                    //判断界面显示的最后item的position是否等于itemCount总数-1也就是最后一个item的position
+                    //如果相等则说明已经滑动到最后了
+                    if(lastPosition == recyclerView.getLayoutManager().getItemCount()-1){
+                        loadMore();
+                    }
+                }
+
             }
-        }, rv);
-        //默认第一次加载会进入回调，如果不需要可以配置
-        //先setOnLoadMoreListener再配置
-        getAdapter().disableLoadMoreIfNotFullPage();
+        });
+
         sw_layout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -67,24 +76,12 @@ public class GankListFragment extends Fragment {
         });
 
         View view = LayoutInflater.from(getContext()).inflate(R.layout.empty_view, null);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Utils.isNetworkAvailable(getContext()))
-                    upRefresh();
-                else
-                    Utils.showToastLong("没有网络");
-            }
-        });
         getAdapter().setEmptyView(view);
 
         //adapter.setFooterView(footerView);
 
-        if (Utils.isNetworkAvailable(getContext())) {
-            sw_layout.setRefreshing(true);
-            upRefresh();
-        } else
-            Utils.showToastLong("没有网络");
+        //进入页面的时候加载数据
+        upRefresh();
     }
 
     protected void bindRvAdapter() {
@@ -116,7 +113,6 @@ public class GankListFragment extends Fragment {
                 }
             }
         });
-        rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
     }
 
@@ -126,35 +122,38 @@ public class GankListFragment extends Fragment {
 
     public void loadMore() {
         if (presenter != null) {
-            //这里的作用是防止下拉刷新的时候还可以上拉加载
-            adapter.setEnableLoadMore(false);
-            curPage = 1;
-            presenter.getGankRepositories(curPage++);
+            presenter.getGankRepositories(curPage);
         }
     }
 
     public void upRefresh() {
         if (presenter != null) {
-            LogUtils.i("upRefresh()");
-            presenter.getGankRepositories(curPage++);
-        } else
-            sw_layout.setRefreshing(false);
+            //这里的作用是防止下拉刷新的时候还可以上拉加载
+            adapter.setEnableLoadMore(false);
+            curPage = 1;
+            sw_layout.setRefreshing(true);
+            presenter.getGankRepositories(curPage);
+        }
     }
 
     public void loadRepoList(List<RepositoryInfo> repositoryInfos) {
-        //==2说明为上拉加载
-        if (curPage == 2) {
+        if(repositoryInfos == null) {
+            sw_layout.setRefreshing(false);
+            return;
+        }
+        //==1说明为上拉加载
+        if (curPage == 1) {
             adapter.setNewData(repositoryInfos);
             adapter.setEnableLoadMore(true);
             sw_layout.setRefreshing(false);
-
+            curPage++;
         } else {
             if(repositoryInfos.size() == 0) {
                 Utils.showToastLong("没有数据了");
-                adapter.loadMoreEnd();
+
             } else {
                 adapter.addData(repositoryInfos);
-                adapter.loadMoreComplete();
+                curPage++;
             }
         }
 

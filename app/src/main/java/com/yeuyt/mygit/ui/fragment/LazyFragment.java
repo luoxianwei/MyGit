@@ -15,6 +15,9 @@ import com.yeuyt.mygit.ui.interfaceView.BaseView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+/**
+ * 懒加载
+ */
 public abstract class LazyFragment extends Fragment implements BaseView{
     private boolean hasInit = false;
     protected View rootView;
@@ -44,7 +47,7 @@ public abstract class LazyFragment extends Fragment implements BaseView{
         if (forceToLoad || (isVisibleToUser && !hasInit && shouldLazyLoad())) {
             Runnable runnable = new Runnable() {
                 public void run() {
-                    initData(mSavedInstanceState);
+                    initData();
                     hasInit = true;
                 }
             };

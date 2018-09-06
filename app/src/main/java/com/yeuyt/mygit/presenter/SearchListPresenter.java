@@ -1,5 +1,6 @@
 package com.yeuyt.mygit.presenter;
 
+import com.yeuyt.mygit.di.GitApplication;
 import com.yeuyt.mygit.model.entity.RepositoryInfo;
 import com.yeuyt.mygit.model.entity.SearchResult;
 import com.yeuyt.mygit.model.entity.UserEntity;
@@ -25,8 +26,13 @@ public class SearchListPresenter extends BasePresenter<SearchListContract.View> 
 
     @Override
     public void searchUser(String keyword, int curPage) {
-        if (!AccountHelper.isLogin(getView().getViewContext())) {
-            Utils.showToastLong("请先登陆");
+        if (!Utils.isNetworkAvailable(GitApplication.getContext())) {
+            Utils.showToastLong("没有网络");
+            getView().loadUsersList(null);
+            return;
+        } else if(!AccountHelper.isLogin(GitApplication.getContext())) {
+            Utils.showToastShort("请先登陆");
+            getView().loadUsersList(null);
             return;
         }
 
@@ -43,8 +49,13 @@ public class SearchListPresenter extends BasePresenter<SearchListContract.View> 
 
     @Override
     public void searchRepository(String keyword, int curPage) {
-        if (!AccountHelper.isLogin(getView().getViewContext())) {
-            Utils.showToastLong("请先登陆");
+        if (!Utils.isNetworkAvailable(GitApplication.getContext())) {
+            Utils.showToastLong("没有网络");
+            getView().loadRepositoriesList(null);
+            return;
+        } else if(!AccountHelper.isLogin(GitApplication.getContext())) {
+            Utils.showToastShort("请先登陆");
+            getView().loadRepositoriesList(null);
             return;
         }
         addDisposable(

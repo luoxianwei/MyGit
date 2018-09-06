@@ -55,7 +55,7 @@ public class SearchFragment extends LazyFragment implements SearchListContract.V
     }
 
     @Override
-    public void initData(Bundle savedInstanceState) {
+    public void initData() {
         initDagger();
 
         setupViewPager();
@@ -144,14 +144,21 @@ public class SearchFragment extends LazyFragment implements SearchListContract.V
 
     @Override
     public void loadUsersList(SearchResult<UserEntity> userEntities) {
-
-        searchUserFragment.loadUsersList(userEntities.items);
+        if (userEntities == null) {
+            searchUserFragment.loadUsersList(null);
+        } else {
+            searchUserFragment.loadUsersList(userEntities.items);
+        }
     }
 
     @Override
     public void loadRepositoriesList(SearchResult<RepositoryInfo> repoEntities) {
-        LogUtils.i("searchssssssssssssss");
-        searchRepoFragment.loadRepoList(repoEntities.items);
+        if (repoEntities == null) {
+            searchRepoFragment.loadRepoList(null);
+        } else {
+            searchRepoFragment.loadRepoList(repoEntities.items);
+        }
+
     }
 
     @Override

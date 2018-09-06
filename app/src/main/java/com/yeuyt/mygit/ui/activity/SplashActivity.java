@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.yeuyt.mygit.R;
 import com.yeuyt.mygit.widgets.PathAnimatorListener;
-import com.yeuyt.mygit.widgets.PathViewTemplate;
 import com.yeuyt.mygit.widgets.TextPathView;
 
 import butterknife.BindView;
@@ -29,14 +28,17 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
-        text_path.startAnimation(0, 1, PathViewTemplate.REVERSE, 0);
+        startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+        finish();
+        /*text_path.startAnimation(0, 1, TextPathView.REVERSE, 0);
         text_path.setAnimatorListener(new PathAnimatorListener() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 SystemClock.sleep(1000);
                 startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                finish();
             }
-        });
+        });*/
 
     }
 }

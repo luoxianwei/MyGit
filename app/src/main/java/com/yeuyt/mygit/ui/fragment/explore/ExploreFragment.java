@@ -60,7 +60,7 @@ public class ExploreFragment extends LazyFragment implements ExploreContract.Vie
     }
 
     @Override
-    public void initData(Bundle savedInstanceState) {
+    public void initData() {
         initDagger();
 
         setupViewPager();

@@ -67,7 +67,6 @@ public abstract class RepoListActivity extends BaseListActivity implements RepoL
                 }
             }
         });
-        rv.setLayoutManager(new LinearLayoutManager(RepoListActivity.this));
         rv.setAdapter(adapter);
     }
     @Override

@@ -39,7 +39,6 @@ public class SearchUserFragment extends ListFragment {
                 }
             }
         });
-        rv.setLayoutManager(new LinearLayoutManager(getContext()));
         rv.setAdapter(adapter);
     }
 
@@ -51,36 +50,38 @@ public class SearchUserFragment extends ListFragment {
     @Override
     public void loadMore() {
         if (presenter != null) {
-            //这里的作用是防止下拉刷新的时候还可以上拉加载
-            adapter.setEnableLoadMore(false);
-            curPage = 1;
-            presenter.searchUser(keyword, curPage++);
+            presenter.searchUser(keyword, curPage);
         }
     }
 
     @Override
     public void upRefresh() {
-        if (presenter != null)
-            presenter.searchUser(keyword, curPage++);
-        else
-            sw_layout.setRefreshing(false);
+        if (presenter != null) {
+            adapter.setEnableLoadMore(false);
+            curPage = 1;
+            sw_layout.setRefreshing(true);
+            presenter.searchUser(keyword, curPage);
+        }
+
+
     }
 
-
-
     public void loadUsersList(List<UserEntity> userEntities) {
-        if (curPage == 2) {
+        if(userEntities == null) {
+            sw_layout.setRefreshing(false);
+            return;
+        }
+        if (curPage == 1) {
             adapter.setNewData(userEntities);
             adapter.setEnableLoadMore(true);
             sw_layout.setRefreshing(false);
-
+            curPage++;
         } else {
             if(userEntities.size() == 0) {
                 Utils.showToastLong("没有数据了");
-                adapter.loadMoreEnd();
             } else {
                 adapter.addData(userEntities);
-                adapter.loadMoreComplete();
+                curPage++;
             }
         }
     }

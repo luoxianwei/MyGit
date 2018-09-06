@@ -13,7 +13,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseView
         super.onCreate(savedInstanceState);
         setContentView(getLayoutId());
         initView();
-        initData(savedInstanceState);
+        initData();
     }
 
     @Override

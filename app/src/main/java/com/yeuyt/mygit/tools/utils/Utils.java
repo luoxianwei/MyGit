@@ -19,10 +19,15 @@ public class Utils {
     }
 
     public static boolean isNetworkAvailable(Context context) {
-        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        assert manager != null;
-        NetworkInfo info = manager.getActiveNetworkInfo();
-        return info != null && info.isAvailable();
+        if (context != null) {
+            ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            assert manager != null;
+            NetworkInfo info = manager.getActiveNetworkInfo();
+            if (info != null) {
+                return info.isAvailable();
+            }
+        }
+        return false;
     }
 
     public static void showToastLong(String msg) {

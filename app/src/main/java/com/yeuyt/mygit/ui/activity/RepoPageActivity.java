@@ -48,7 +48,7 @@ public class RepoPageActivity extends BaseActivity implements RepoPageContract.V
     }
 
     @Override
-    public void initData(Bundle savedInstanceState) {
+    public void initData() {
         initDagger();
         Intent intent = getIntent();
         if (intent != null) {

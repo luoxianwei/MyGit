@@ -48,7 +48,7 @@ public class UserDataSource {
         create.client_secret = Constant.GITHUB_CLIENT_SECRET;
         create.note = Constant.NOTE;
         create.scopes = Constant.SCOPES;
-
+        //TODO 当用户名和密码不存在或输入错误时的错误处理，没有写
         return api.createAuthorization(create)
                 .flatMap(new Function<Authorization, ObservableSource<UserInfo>>() {
                     @Override

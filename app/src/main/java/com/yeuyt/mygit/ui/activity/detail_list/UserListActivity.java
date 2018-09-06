@@ -60,7 +60,6 @@ public abstract class UserListActivity extends BaseListActivity implements UserL
                 }
             }
         });
-        rv.setLayoutManager(new LinearLayoutManager(UserListActivity.this));
         rv.setAdapter(adapter);
     }
     @Override

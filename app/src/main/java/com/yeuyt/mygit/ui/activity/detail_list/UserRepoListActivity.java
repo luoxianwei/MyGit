@@ -24,7 +24,7 @@ public class UserRepoListActivity extends RepoListActivity {
     }
     @Override
     protected void loadMore() {
-        presenter.userRepoList(user, curPage++);
+        presenter.userRepoList(user, curPage);
     }
 
     @Override
@@ -32,24 +32,24 @@ public class UserRepoListActivity extends RepoListActivity {
         //这里的作用是防止下拉刷新的时候还可以上拉加载
         adapter.setEnableLoadMore(false);
         curPage = 1;
-        presenter.userRepoList(user, curPage++);
+        sw_layout.setRefreshing(true);
+        presenter.userRepoList(user, curPage);
     }
 
     @Override
     public void loadRepoList(List<RepositoryInfo> repositoryInfos) {
         //==2说明为上拉加载
-        if (curPage == 2) {
+        if (curPage == 1) {
             adapter.setNewData(repositoryInfos);
             adapter.setEnableLoadMore(true);
             sw_layout.setRefreshing(false);
-
+            curPage++;
         } else {
             if(repositoryInfos.size() == 0) {
                 Utils.showToastLong("没有数据了");
-                adapter.loadMoreEnd();
             } else {
                 adapter.addData(repositoryInfos);
-                adapter.loadMoreComplete();
+                curPage++;
             }
         }
 
